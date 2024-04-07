@@ -33,7 +33,6 @@ public class OotdController {
      */
     @RequestMapping("/uploadImage")
     public Map<String,Object> uploadOotdImage(MultipartFile file)throws Exception{
-        System.out.println(file);
         Map<String,Object> map=new HashMap<String,Object>();
         if(!file.isEmpty()){
             // 获取文件名
