@@ -13,6 +13,4 @@ public class ShowImage {
     private String openid; // openId微信用户ID
 
     private String image = "default.jpg"; // 商品图片
-
-
 }

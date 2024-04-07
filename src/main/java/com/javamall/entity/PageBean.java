@@ -27,32 +27,4 @@ public class PageBean {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
     }
-
-//    public int getPageNum() {
-//        return pageNum;
-//    }
-//
-//    public void setPageNum(int pageNum) {
-//        this.pageNum = pageNum;
-//    }
-//
-//    public int getPageSize() {
-//        return pageSize;
-//    }
-//
-//    public void setPageSize(int pageSize) {
-//        this.pageSize = pageSize;
-//    }
-//
-//    public int getStart() {
-//        return (pageNum-1)*pageSize;
-//    }
-//
-//    public String getQuery() {
-//        return query;
-//    }
-//
-//    public void setQuery(String query) {
-//        this.query = query;
-//    }
 }

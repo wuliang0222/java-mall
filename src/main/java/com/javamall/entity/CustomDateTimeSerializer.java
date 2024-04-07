@@ -17,7 +17,6 @@ public class CustomDateTimeSerializer extends JsonSerializer<Date>{
 	@Override
 	public void serialize(Date value, JsonGenerator gen, SerializerProvider serializers)
 			throws IOException {
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		sdf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
 		gen.writeString(sdf.format(value));  

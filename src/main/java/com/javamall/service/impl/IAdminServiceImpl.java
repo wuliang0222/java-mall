@@ -17,7 +17,6 @@ public class IAdminServiceImpl extends ServiceImpl<AdminMapper,Admin> implements
     @Autowired
     private AdminMapper adminMapper;
 
-
     @Override
     public Integer update(Admin admin) {
         return adminMapper.update(admin);

@@ -17,6 +17,4 @@ public class ProductSwiperImage {
     private Integer sort; // 排列序号 从小到大排序
 
     private Integer productId; // 所属产品
-
-
 }

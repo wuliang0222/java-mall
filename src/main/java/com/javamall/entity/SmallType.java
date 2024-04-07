@@ -28,11 +28,4 @@ public class SmallType implements Serializable {
     @TableField(select = false)
     private List<Product> productList; // 商品集合
 
-    public BigType getBigType() {
-        return bigType;
-    }
-
-    public void setBigType(BigType bigType) {
-        this.bigType = bigType;
-    }
 }

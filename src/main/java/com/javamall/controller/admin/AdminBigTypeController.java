@@ -35,9 +35,6 @@ public class AdminBigTypeController {
 
     /**
      * 分页查询
-     *
-     * @param pageBean
-     * @return
      */
     @RequestMapping("/list")
     public R list(@RequestBody PageBean pageBean) {
@@ -52,9 +49,7 @@ public class AdminBigTypeController {
     }
 
     /**
-     * 查询所有数据 下拉框用到
-     *
-     * @return
+     * 查询所有商品大类
      */
     @RequestMapping("/listAll")
     public R listAll() {
@@ -64,10 +59,7 @@ public class AdminBigTypeController {
     }
 
     /**
-     * 添加或者修改
-     *
-     * @param bigType
-     * @return
+     * 添加或者修改商品大类
      */
     @PostMapping("/save")
     public R save(@RequestBody BigType bigType) {
@@ -80,10 +72,7 @@ public class AdminBigTypeController {
     }
 
     /**
-     * 删除
-     *
-     * @param id
-     * @return
+     * 删除商品大类
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id) {
@@ -99,9 +88,6 @@ public class AdminBigTypeController {
 
     /**
      * 根据id查询
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/{id}")
     public R findById(@PathVariable(value = "id") Integer id) {
@@ -114,27 +100,22 @@ public class AdminBigTypeController {
 
     /**
      * 上传商品大类图片
-     *
-     * @param file
-     * @return
-     * @throws Exception
      */
     @RequestMapping("/uploadImage")
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
-
         if (!file.isEmpty()) {
-            // 获取文件名
+            // 文件名拼接
             String fileName = file.getOriginalFilename();
-            // 获取文件的后缀名
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
             String newFileName = DateUtil.getCurrentDateStr() + suffixName;
 
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(bigTypeImagesFilePath + newFileName));
+
             map.put("code", 0);
             map.put("msg", "上传成功");
-
             Map<String, Object> dateMap = new HashMap<String, Object>();
+            //返回给前端新的图片地址
             dateMap.put("title", newFileName);
             dateMap.put("src", "/image/bigType/" + newFileName);
             map.put("data", dateMap);

@@ -48,16 +48,13 @@ public class JwtUtils {
      */
     public static CheckResult validateJWT(String jwtStr) {
         CheckResult checkResult = new CheckResult();
-        Claims claims = null;
+        Claims claims;
         try {
             claims = parseJWT(jwtStr);
             checkResult.setSuccess(true);
             checkResult.setClaims(claims);
         } catch (ExpiredJwtException e) {
             checkResult.setErrCode(SystemConstant.JWT_ERRCODE_EXPIRE);
-            checkResult.setSuccess(false);
-        } catch (SignatureException e) {
-            checkResult.setErrCode(SystemConstant.JWT_ERRCODE_FAIL);
             checkResult.setSuccess(false);
         } catch (Exception e) {
             checkResult.setErrCode(SystemConstant.JWT_ERRCODE_FAIL);
@@ -72,8 +69,7 @@ public class JwtUtils {
      */
     public static SecretKey generalKey() {
         byte[] encodedKey = Base64.decode(SystemConstant.JWT_SECERT);
-        SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
-        return key;
+        return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
     }
 
 
@@ -91,18 +87,18 @@ public class JwtUtils {
                 .getBody();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        //小明失效 10s
-        String sc = createJWT("1","小明", 60 * 60 * 1000);
-        System.out.println(sc);
-        System.out.println(validateJWT(sc).getErrCode());
-        System.out.println(validateJWT(sc).getClaims().getId());
-        System.out.println(validateJWT(sc).getClaims().getSubject());
-        //Thread.sleep(3000);
-        System.out.println(validateJWT(sc).getClaims());
-        Claims claims = validateJWT(sc).getClaims();
-        String sc2 = createJWT(claims.getId(),claims.getSubject(), SystemConstant.JWT_TTL);
-        System.out.println(sc2);
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//        //小明失效 10s
+//        String sc = createJWT("1","小明", 60 * 60 * 1000);
+//        System.out.println(sc);
+//        System.out.println(validateJWT(sc).getErrCode());
+//        System.out.println(validateJWT(sc).getClaims().getId());
+//        System.out.println(validateJWT(sc).getClaims().getSubject());
+//        //Thread.sleep(3000);
+//        System.out.println(validateJWT(sc).getClaims());
+//        Claims claims = validateJWT(sc).getClaims();
+//        String sc2 = createJWT(claims.getId(),claims.getSubject(), SystemConstant.JWT_TTL);
+//        System.out.println(sc2);
+//    }
 
 }

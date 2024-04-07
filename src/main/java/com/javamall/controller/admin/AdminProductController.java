@@ -149,6 +149,7 @@ public class AdminProductController {
             map.put("msg", "上传成功");
             Map<String,Object> map2=new HashMap<String,Object>();
             map2.put("title", newFileName);
+            //虚拟请求路径
             map2.put("src", "/image/swiper/"+newFileName);
             map.put("data", map2);
         }
