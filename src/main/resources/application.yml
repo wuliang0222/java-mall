@@ -1,0 +1,43 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_mall?serverTimezone=Asia/Shanghai
+    username: root
+    password: admin
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: false
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+weixin:
+  jscode2sessionUrl: https://api.weixin.qq.com/sns/jscode2session
+  appid: wx45e859ecddf25fae
+  secret: 9934e6e299def2e634953dc84f47a231
+
+
+bigTypeImagesFilePath: F://300-Program/310-Code/images/bigTypeImgs/
+
+productImagesFilePath: F://300-Program/310-Code/images/productImgs/
+
+swiperImagesFilePath: F://300-Program/310-Code/images/swiperImgs/
+
+productSwiperImagesFilePath: F://300-Program/310-Code/images/productSwiperImgs/
+
+ootdImagesFilePath: F://300-Program/310-Code/images/ootdImgs/
+
+
+
+
+
