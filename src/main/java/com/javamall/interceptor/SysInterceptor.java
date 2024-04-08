@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
  * 鉴权拦截器
  */
 public class SysInterceptor implements HandlerInterceptor {
-
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();

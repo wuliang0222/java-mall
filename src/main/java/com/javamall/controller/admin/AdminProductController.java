@@ -49,6 +49,7 @@ public class AdminProductController {
 
         List<Product> list = productService.list(map);
         Long total = productService.getTotal(map);
+
         Map<String,Object> resultMap=new HashMap<>();
         resultMap.put("productList",list);
         resultMap.put("total",total);
@@ -116,7 +117,7 @@ public class AdminProductController {
     }
 
     /**
-     * 更新商品图片
+     * 添加商品图片
      * @param product
      * @return
      */

@@ -91,7 +91,6 @@ public class OrderController {
         Page<Order> pageOrder = new Page<>(page, pageSize);
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-
         if (type == 0) {  // 查询全部
             // orderList = orderService.list();
             Page<Order> orderReslut = orderService.page(pageOrder, new QueryWrapper<Order>().orderByDesc("orderNo"));

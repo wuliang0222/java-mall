@@ -31,34 +31,31 @@ public class OotdController {
     /**
      * 上传换装前图片
      */
-    @RequestMapping("/uploadImage")
-    public Map<String,Object> uploadOotdImage(MultipartFile file)throws Exception{
-        Map<String,Object> map=new HashMap<String,Object>();
-        if(!file.isEmpty()){
+    @RequestMapping("/uploadImage/upper")
+    public Map<String, Object> uploadOotdImageUpper(MultipartFile file) throws Exception {
+        System.out.println(123);
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (!file.isEmpty()) {
             // 获取文件名
             String fileName = file.getOriginalFilename();
             System.out.println("fileName" + fileName);
             // 获取文件的后缀名
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName=DateUtil.getCurrentDateStr()+suffixName;
+            // 用时间戳作为文件名
+            String newFileName = "upper" + DateUtil.getCurrentDateStr() + suffixName;
 
-            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(ootdImagesFilePath+newFileName));
+            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(ootdImagesFilePath + newFileName));
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String,Object> map2=new HashMap<String,Object>();
+            Map<String, Object> map2 = new HashMap<String, Object>();
             map2.put("title", newFileName);
-            map2.put("src", "/image/ootdImgs/"+newFileName);
+            map2.put("src", "/image/ootdImgs/" + newFileName);
             map.put("data", map2);
         }
-        System.out.println("map:"+map);
+        System.out.println("map:" + map);
         System.out.println("file2");
         return map;
     }
-
-
-
-
-
 
 
 }

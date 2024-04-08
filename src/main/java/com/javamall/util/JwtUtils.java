@@ -72,7 +72,6 @@ public class JwtUtils {
         return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
     }
 
-
     /**
      * 解析JWT字符串
      * @param jwt
@@ -86,19 +85,4 @@ public class JwtUtils {
                 .parseClaimsJws(jwt)
                 .getBody();
     }
-
-//    public static void main(String[] args) throws InterruptedException {
-//        //小明失效 10s
-//        String sc = createJWT("1","小明", 60 * 60 * 1000);
-//        System.out.println(sc);
-//        System.out.println(validateJWT(sc).getErrCode());
-//        System.out.println(validateJWT(sc).getClaims().getId());
-//        System.out.println(validateJWT(sc).getClaims().getSubject());
-//        //Thread.sleep(3000);
-//        System.out.println(validateJWT(sc).getClaims());
-//        Claims claims = validateJWT(sc).getClaims();
-//        String sc2 = createJWT(claims.getId(),claims.getSubject(), SystemConstant.JWT_TTL);
-//        System.out.println(sc2);
-//    }
-
 }
