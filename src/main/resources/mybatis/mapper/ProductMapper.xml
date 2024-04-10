@@ -5,7 +5,7 @@
 <mapper namespace="com.javamall.mapper.ProductMapper">
 
     <resultMap type="com.javamall.entity.Product" id="ProductResult">
-        <association property="type" column="typeId" select="com.javamall.mapper.SmallTypeMapper.findById"></association>
+        <association property="type" column="typeId" select="com.javamall.mapper.SmallTypeMapper.findById"/>
     </resultMap>
 
     <select id="findSwiper" resultMap="ProductResult">
@@ -39,7 +39,7 @@
 
 
     <insert id="add" parameterType="com.javamall.entity.Product">
-        insert into t_product values(null,#{name},#{price},#{stock},#{proPic},#{hot},#{swiper},#{swiperPic},#{swiperSort},#{type.id},null,#{productIntroImgs},#{productParaImgs},#{description});
+        insert into t_product values(null,#{name},#{price},#{stock},#{proPic},#{hot},#{swiper},#{swiperPic},#{swiperSort},#{type.id},null,#{productIntroImgs},#{productParaImgs});
     </insert>
 
     <update id="update" parameterType="com.javamall.entity.Product">
@@ -56,9 +56,6 @@
             </if>
             <if test="type!=null and type.id!=null">
                 typeId=#{type.id},
-            </if>
-            <if test="description!=null and description!=''">
-                description=#{description},
             </if>
             <if test="productIntroImgs!=null and productIntroImgs!=''">
                 productIntroImgs=#{productIntroImgs},
