@@ -29,6 +29,7 @@ public class OrderController {
 
     /**
      * 创建订单，返回订单号
+     *
      * @return
      */
     @RequestMapping("/create")
@@ -43,7 +44,7 @@ public class OrderController {
                 order.setOrderNo("id" + DateUtil.getCurrentDateStr());
                 order.setCreateDate(new Date());
                 //支付时间
-                if(order.getStatus() == 2){
+                if (order.getStatus() == 2) {
                     order.setPayDate(new Date());
                 }
             } else {
@@ -78,9 +79,7 @@ public class OrderController {
         if (StringUtil.isNotEmpty(token)) {
             //判断token是否失效
             Claims claims = JwtUtils.validateJWT(token).getClaims();
-            if (claims != null) {
-                String openId = claims.getId();
-            } else {
+            if (claims == null) {
                 return R.error(500, "鉴权失败！");
             }
         } else {
@@ -90,27 +89,16 @@ public class OrderController {
         List<Order> orderList;
         Page<Order> pageOrder = new Page<>(page, pageSize);
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        Page<Order> orderResult;
 
         if (type == 0) {  // 查询全部
-            // orderList = orderService.list();
-            Page<Order> orderReslut = orderService.page(pageOrder, new QueryWrapper<Order>().orderByDesc("orderNo"));
-//            System.out.println("总记录：" + orderReslut.getTotal());
-//            System.out.println("总页数：" + orderReslut.getPages());
-//            System.out.println("当前页数据：" + orderReslut.getRecords());
-            resultMap.put("total", orderReslut.getTotal());
-            resultMap.put("totalPage", +orderReslut.getPages());
-            orderList = orderReslut.getRecords();
-
+            orderResult = orderService.page(pageOrder, new QueryWrapper<Order>().orderByDesc("orderNo"));
         } else {  // 根据状态查询
-            // orderList=orderService.list(new QueryWrapper<Order>().eq("status",type));
-            Page<Order> orderReslut = orderService.page(pageOrder, new QueryWrapper<Order>().eq("status", type).orderByDesc("orderNo"));
-//            System.out.println("总记录：" + orderReslut.getTotal());
-//            System.out.println("总页数：" + orderReslut.getPages());
-//            System.out.println("当前页数据：" + orderReslut.getRecords());
-            resultMap.put("total", orderReslut.getTotal());
-            resultMap.put("totalPage", +orderReslut.getPages());
-            orderList = orderReslut.getRecords();
+            orderResult = orderService.page(pageOrder, new QueryWrapper<Order>().eq("status", type).orderByDesc("orderNo"));
         }
+        resultMap.put("total", orderResult.getTotal());
+        resultMap.put("totalPage", +orderResult.getPages());
+        orderList = orderResult.getRecords();
         resultMap.put("page", page);
         resultMap.put("orderList", orderList);
         return R.ok(resultMap);

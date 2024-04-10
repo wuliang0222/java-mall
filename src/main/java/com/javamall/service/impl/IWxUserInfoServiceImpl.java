@@ -16,6 +16,4 @@ public class IWxUserInfoServiceImpl extends ServiceImpl<WxUserInfoMapper,WxUserI
 
     @Autowired
     private WxUserInfoMapper wxUserInfoMapper;
-
-
 }

@@ -1,6 +1,8 @@
 package com.javamall.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.javamall.entity.*;
 import com.javamall.service.IOotdImageService;
 import com.javamall.util.DateUtil;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +35,8 @@ public class OotdImageController {
 
 
     /**
-     * 创建订单，返回订单号
+     * 创建虚拟试衣，返回虚拟试衣号
+     *
      * @return
      */
     @RequestMapping("/create")
@@ -62,12 +66,8 @@ public class OotdImageController {
     /**
      * 上传换装前图片
      */
-    @RequestMapping("/uploadImage/upper")
-    public Map<String, Object> uploadOotdImageUpper(@RequestParam("file")MultipartFile file,@RequestParam  Map<String, String> formData) throws Exception {
-        System.out.println("file:"+file);
-        System.out.println("testImage:"+formData.get("testImage"));
-        System.out.println("testImage2:"+ formData.get("testImage2"));
-
+    @RequestMapping("/uploadImage")
+    public Map<String, Object> uploadOotdImageUpper(@RequestParam("file") MultipartFile file, @RequestParam Map<String, String> formData) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (!file.isEmpty()) {
             // 获取文件名
@@ -88,6 +88,40 @@ public class OotdImageController {
         }
         System.out.println("map:" + map);
         return map;
+    }
+
+    /**
+     * 订单查询  type 值 0 虚拟试衣  1 为生成   2  已生成
+     */
+    @RequestMapping("/list")
+    public R list(Integer type, Integer page, Integer pageSize, @RequestHeader(value = "token") String token) {
+        //判断token是否为空
+        if (StringUtil.isNotEmpty(token)) {
+            //判断token是否失效
+            Claims claims = JwtUtils.validateJWT(token).getClaims();
+            if (claims == null) {
+                return R.error(500, "鉴权失败！");
+            }
+        } else {
+            return R.error(500, "无权限访问！");
+        }
+
+        List<OotdImage> ootdImageList;
+        Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        Page<OotdImage> ootdImageResult;
+        if (type == 0) {  // 查询全部
+            ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().orderByDesc("ootdNo"));
+        } else {  // 根据状态查询
+            ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", type).orderByDesc("ootdNo"));
+        }
+        resultMap.put("total", ootdImageResult.getTotal());
+        resultMap.put("totalPage", +ootdImageResult.getPages());
+        ootdImageList = ootdImageResult.getRecords();
+        resultMap.put("page", page);
+        resultMap.put("ootdImageList", ootdImageList);
+        return R.ok(resultMap);
     }
 
 

@@ -21,15 +21,15 @@ public class OotdImage {
 
     private String userId; // openId微信用户ID
 
-    private String clothingImage; // 衣服图片
+    private String clothingImage = "default.jpg"; // 衣服图片
 
-    private String bodyImage; // 身体图片
+    private String bodyImage = "default.jpg"; // 身体图片
 
-    private String ootdImage; // 虚拟试衣图片
+    private String ootdImage = "default.jpg"; // 虚拟试衣图片
 
-    private Integer status=1; // 虚拟试衣状态 0 全部订单  1 未生成   2  已生成
+    private Integer status = 1; // 虚拟试衣状态 0 全部订单  1 未生成   2 已生成
 
-    @JsonSerialize(using=CustomDateTimeSerializer.class)
+    @JsonSerialize(using = CustomDateTimeSerializer.class)
     private Date createDate; // 虚拟试衣创建日期
 
     @TableField(select = false)

@@ -3,6 +3,7 @@ package com.javamall.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.javamall.entity.OotdImage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -24,5 +25,5 @@ public interface IOotdImageService extends IService<OotdImage> {
      */
     public Long getTotal(Map<String,Object> map);
 
-    public OotdImage ootd(Map<String,Object> map);
+    String ootd(String model, String garment, int category) throws Exception;
 }

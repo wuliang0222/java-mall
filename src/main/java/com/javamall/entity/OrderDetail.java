@@ -24,6 +24,6 @@ public class OrderDetail {
 
     private String goodsName; // 商品名称
 
-    private String goodsPic; // 商品图片
+    private String goodsPic="default.jpg"; // 商品图片
 
 }
