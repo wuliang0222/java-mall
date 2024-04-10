@@ -5,7 +5,7 @@
 <mapper namespace="com.javamall.mapper.OotdImageMapper">
 
     <resultMap type="com.javamall.entity.OotdImage" id="OotdImageResult">
-<!--        <association property="wxUserInfo" column="userId" select="com.javamall.mapper.WxUserInfoMapper.findByOpenId"/>-->
+        <association property="wxUserInfo" column="userId" select="com.javamall.mapper.WxUserInfoMapper.findByOpenId"/>
     </resultMap>
 
     <select id="list" parameterType="Map" resultMap="OotdImageResult">

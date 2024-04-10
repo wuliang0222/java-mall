@@ -1,13 +1,8 @@
 package com.javamall.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.javamall.entity.*;
-import com.javamall.service.IBigTypeService;
 import com.javamall.service.IOotdImageService;
-import com.javamall.service.IOrderService;
-import com.javamall.service.ISmallTypeService;
 import com.javamall.util.DateUtil;
 import com.javamall.util.JwtUtils;
 import com.javamall.util.StringUtil;
@@ -18,10 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +22,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/my/ootd")
-public class OotdController {
+public class OotdImageController {
 
     @Autowired
     private IOotdImageService ootdImageService;
@@ -52,7 +44,7 @@ public class OotdController {
             if (claims != null) {
                 String openId = claims.getId();
                 ootdImage.setUserId(openId);
-                ootdImage.setOrderNo("ootd" + DateUtil.getCurrentDateStr());
+                ootdImage.setOotdNo("ootd" + DateUtil.getCurrentDateStr());
             } else {
                 return R.error(500, "鉴权失败！");
             }
@@ -62,8 +54,8 @@ public class OotdController {
 
         ootdImageService.save(ootdImage);
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String orderNo = ootdImage.getOrderNo();
-        resultMap.put("orderNo", orderNo);
+        String ootdNo = ootdImage.getOotdNo();
+        resultMap.put("ootdNo", ootdNo);
         return R.ok(resultMap);
     }
 

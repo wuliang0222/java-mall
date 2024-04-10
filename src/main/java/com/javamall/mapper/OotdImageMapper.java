@@ -2,7 +2,6 @@ package com.javamall.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.javamall.entity.OotdImage;
-import com.javamall.entity.Order;
 
 import java.util.List;
 import java.util.Map;

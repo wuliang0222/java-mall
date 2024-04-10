@@ -1,9 +1,7 @@
 package com.javamall.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.javamall.entity.BigType;
 import com.javamall.entity.OotdImage;
-import com.javamall.entity.Order;
 
 import java.util.List;
 import java.util.Map;
