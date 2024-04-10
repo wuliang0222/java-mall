@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javamall.mapper.OotdImageMapper">
+
+    <resultMap type="com.javamall.entity.OotdImage" id="OotdImageResult">
+<!--        <association property="wxUserInfo" column="userId" select="com.javamall.mapper.WxUserInfoMapper.findByOpenId"/>-->
+    </resultMap>
+
+    <select id="list" parameterType="Map" resultMap="OotdImageResult">
+        select * from t_ootd_image
+        <where>
+            <if test="ootdNo!=null and ootdNo!='' ">
+                and ootdNo like concat('%',#{ootdNo},'%')
+            </if>
+        </where>
+        order by createDate desc
+        <if test="start!=null and pageSize!=null">
+            limit #{start},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        select count(*) from t_ootd_image
+        <where>
+            <if test="ootdNo!=null and ootdNo!='' ">
+                and ootdNo like concat('%',#{ootdNo},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="ootd" parameterType="Map" resultMap="OotdImageResult">
+        select count(*) from t_ootd_image
+        <where>
+            <if test="ootdNo!=null and ootdNo!='' ">
+                and ootdNo like concat('%',#{ootdNo},'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

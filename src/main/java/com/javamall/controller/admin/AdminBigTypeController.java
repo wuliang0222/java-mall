@@ -85,7 +85,6 @@ public class AdminBigTypeController {
         }
     }
 
-
     /**
      * 根据id查询
      */

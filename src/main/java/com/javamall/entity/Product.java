@@ -39,7 +39,7 @@ public class Product {
 
     private String swiperPic="default.jpg"; // 商品轮播图片
 
-    private String description; // 描述
+    private Integer typeId; // 商品小类
 
     @TableField(select = false)
     private SmallType type; // 商品类别

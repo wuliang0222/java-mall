@@ -3,8 +3,10 @@ package com.javamall.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.javamall.entity.PageBean;
+import com.javamall.entity.Product;
 import com.javamall.entity.R;
 import com.javamall.entity.SmallType;
+import com.javamall.service.IProductService;
 import com.javamall.service.ISmallTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,24 +25,28 @@ public class AdminSmallTypeController {
     @Autowired
     private ISmallTypeService smallTypeService;
 
+    @Autowired
+    private IProductService productService;
+
     /**
      * 根据条件分页查询
+     *
      * @param pageBean
      * @return
      */
     @RequestMapping("/list")
-    public R list(@RequestBody PageBean pageBean){
+    public R list(@RequestBody PageBean pageBean) {
         System.out.println("bean" + pageBean);
-        Map<String,Object> map=new HashMap<>();
-        map.put("name",pageBean.getQuery().trim());
-        map.put("start",(pageBean.getPageNum()-1)*pageBean.getPageSize());
-        map.put("pageSize",pageBean.getPageSize());
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", pageBean.getQuery().trim());
+        map.put("start", (pageBean.getPageNum() - 1) * pageBean.getPageSize());
+        map.put("pageSize", pageBean.getPageSize());
         List<SmallType> list = smallTypeService.list(map);
         Long total = smallTypeService.getTotal(map);
 
-        Map<String,Object> resultMap=new HashMap<>();
-        resultMap.put("smallTypeList",list);
-        resultMap.put("total",total);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("smallTypeList", list);
+        resultMap.put("total", total);
 
         System.out.println(map.get("start"));
         System.out.println(map.get("pageSize"));
@@ -49,14 +55,15 @@ public class AdminSmallTypeController {
 
     /**
      * 添加或者修改
+     *
      * @param smallType
      * @return
      */
     @PostMapping("/save")
-    public R save(@RequestBody SmallType smallType){
-        if(smallType.getId()==null || smallType.getId()==-1){
+    public R save(@RequestBody SmallType smallType) {
+        if (smallType.getId() == null || smallType.getId() == -1) {
             smallTypeService.add(smallType);
-        }else{
+        } else {
             smallTypeService.update(smallType);
         }
         return R.ok();
@@ -65,32 +72,45 @@ public class AdminSmallTypeController {
 
     /**
      * 删除
+     *
      * @param id
      * @return
      */
     @GetMapping("/delete/{id}")
-    public R delete(@PathVariable(value = "id") Integer id){
-        smallTypeService.removeById(id);
-        return R.ok();
+    public R delete(@PathVariable(value = "id") Integer id) {
+        // 加个判断 大类下面如果有小类，返回报错提示
+        if (productService.count(new QueryWrapper<Product>().eq("typeId", id)) > 0) {
+            return R.error(500, "小类下面有商品信息，不能删除");
+        } else {
+            smallTypeService.removeById(id);
+            return R.ok();
+        }
     }
 
     /**
-     * 根据商品大类id，查询所有数据 下拉框用到
+     * 根据商品大类id，查询商品小类
+     *
      * @return
      */
     @RequestMapping("/listAll/{bigTypeId}")
-    public R listAll(@PathVariable(value = "bigTypeId") Integer bigTypeId){
-        Map<String,Object> map=new HashMap<>();
-        map.put("smallTypeList",smallTypeService.list(new QueryWrapper<SmallType>().eq("bigTypeId",bigTypeId)));
+    public R listAll(@PathVariable(value = "bigTypeId") Integer bigTypeId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("smallTypeList", smallTypeService.list(new QueryWrapper<SmallType>().eq("bigTypeId", bigTypeId)));
         return R.ok(map);
     }
 
+    /**
+     * 根据商品小类id，查询对应的商品大类
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/getBigTypeIdBySmallTypeId/{id}")
-    public R getBigTypeIdBySmallTypeId(@PathVariable(value = "id") Integer id){
-        Map<String,Object> map=new HashMap<>();
-        Integer bigTypeId=smallTypeService.getById(id).getBigTypeId();
-        System.out.println("bigTypeId="+bigTypeId);
-        map.put("bigTypeId",bigTypeId);
+    public R getBigTypeIdBySmallTypeId(@PathVariable(value = "id") Integer id) {
+        Map<String, Object> map = new HashMap<>();
+        Integer bigTypeId = smallTypeService.getById(id).getBigTypeId();
+        System.out.println("bigTypeId=" + bigTypeId);
+        map.put("bigTypeId", bigTypeId);
         return R.ok(map);
     }
 
