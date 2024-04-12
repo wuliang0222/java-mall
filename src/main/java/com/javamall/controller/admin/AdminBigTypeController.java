@@ -104,11 +104,9 @@ public class AdminBigTypeController {
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (!file.isEmpty()) {
-            // 文件名拼接
             String fileName = file.getOriginalFilename();
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName = DateUtil.getCurrentDateStr() + suffixName;
-
+            String newFileName = "bigType" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(bigTypeImagesFilePath + newFileName));
 
             map.put("code", 0);

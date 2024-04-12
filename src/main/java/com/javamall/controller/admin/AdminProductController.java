@@ -103,13 +103,11 @@ public class AdminProductController {
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (!file.isEmpty()) {
-            // 获取文件名
             String fileName = file.getOriginalFilename();
-            // 获取文件的后缀名
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName = DateUtil.getCurrentDateStr() + suffixName;
-
+            String newFileName = "product" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(productImagesFilePath + newFileName));
+
             map.put("code", 0);
             map.put("msg", "上传成功");
             Map<String, Object> map2 = new HashMap<String, Object>();
@@ -145,13 +143,11 @@ public class AdminProductController {
     public Map<String, Object> uploadSwiperImage(MultipartFile file) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         if (!file.isEmpty()) {
-            // 获取文件名
             String fileName = file.getOriginalFilename();
-            // 获取文件的后缀名
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName = DateUtil.getCurrentDateStr() + suffixName;
-
+            String newFileName = "swiper" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(swiperImagesFilePath + newFileName));
+
             map.put("code", 0);
             map.put("msg", "上传成功");
             Map<String, Object> map2 = new HashMap<String, Object>();

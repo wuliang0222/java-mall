@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 虚拟试衣Controller控制器
@@ -33,6 +31,47 @@ public class OotdImageController {
     @Value("${ootdImagesFilePath}")
     private String ootdImagesFilePath;
 
+    @Value("${bodyImagesFilePath}")
+    private String bodyImagesFilePath;
+
+    @Value("${clothingImagesFilePath}")
+    private String clothingImagesFilePath;
+
+    /**
+     * 上传换装前图片
+     */
+    @RequestMapping("/uploadImage")
+    public Map<String, Object> uploadOotdImageUpper(@RequestParam("file") MultipartFile file, @RequestParam Map<String, String> formData) throws Exception {
+        // model身体、clothing衣服
+        String prefixName = formData.get("type");
+        System.out.println("prefixName:" + prefixName);
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (!file.isEmpty()) {
+            // 获取文件名
+            String fileName = file.getOriginalFilename();
+            System.out.println("fileName:" + fileName);
+            // 获取文件的后缀名
+            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            // 用前缀+时间戳作为文件名
+            String newFileName = prefixName + DateUtil.getCurrentDateStr() + suffixName;
+            map.put("code", 0);
+            map.put("msg", "上传成功");
+            Map<String, Object> map2 = new HashMap<String, Object>();
+            map2.put("title", newFileName);
+            // 根据prefixName判断图片种类 保存到对应磁盘文件
+            if (prefixName.equals("model")) { // 身体
+                FileUtils.copyInputStreamToFile(file.getInputStream(), new File(bodyImagesFilePath + newFileName));
+                map2.put("src", newFileName);
+            } else if (prefixName.equals("garment")) { //衣服
+                FileUtils.copyInputStreamToFile(file.getInputStream(), new File(clothingImagesFilePath + newFileName));
+                map2.put("src", newFileName);
+            }
+            map.put("data", map2);
+        }
+        System.out.println("map:" + map);
+        return map;
+    }
 
     /**
      * 创建虚拟试衣，返回虚拟试衣号
@@ -49,6 +88,7 @@ public class OotdImageController {
                 String openId = claims.getId();
                 ootdImage.setUserId(openId);
                 ootdImage.setOotdNo("ootd" + DateUtil.getCurrentDateStr());
+                ootdImage.setCreateDate(new Date());
             } else {
                 return R.error(500, "鉴权失败！");
             }
@@ -60,66 +100,70 @@ public class OotdImageController {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         String ootdNo = ootdImage.getOotdNo();
         resultMap.put("ootdNo", ootdNo);
+
+        //ootd时间比较久 单独创建一个线程
+        new Thread(() -> {
+            String bodyImage = ootdImage.getBodyImage();
+            String clothingImage = ootdImage.getClothingImage();
+            Integer category = ootdImage.getCategory();
+            ootdImageService.ootd(bodyImage, clothingImage, category, ootdImage);
+        }).start();
+
+
         return R.ok(resultMap);
     }
 
-    /**
-     * 上传换装前图片
-     */
-    @RequestMapping("/uploadImage")
-    public Map<String, Object> uploadOotdImageUpper(@RequestParam("file") MultipartFile file, @RequestParam Map<String, String> formData) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
-        if (!file.isEmpty()) {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
-            System.out.println("fileName:" + fileName);
-            // 获取文件的后缀名
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            // 用时间戳作为文件名
-            String newFileName = "upper" + DateUtil.getCurrentDateStr() + suffixName;
-
-            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(ootdImagesFilePath + newFileName));
-            map.put("code", 0);
-            map.put("msg", "上传成功");
-            Map<String, Object> map2 = new HashMap<String, Object>();
-            map2.put("title", newFileName);
-            map2.put("src", "/image/ootdImgs/" + newFileName);
-            map.put("data", map2);
-        }
-        System.out.println("map:" + map);
-        return map;
-    }
 
     /**
-     * 订单查询  type 值 0 虚拟试衣  1 为生成   2  已生成
+     * 订单查询  type 值 0 全部虚拟试衣  1 为生成   2  已生成
      */
     @RequestMapping("/list")
     public R list(Integer type, Integer page, Integer pageSize, @RequestHeader(value = "token") String token) {
-        //判断token是否为空
+        String openId;
         if (StringUtil.isNotEmpty(token)) {
-            //判断token是否失效
             Claims claims = JwtUtils.validateJWT(token).getClaims();
             if (claims == null) {
                 return R.error(500, "鉴权失败！");
+            } else {
+                openId = claims.getId();
+                System.out.println(openId);
             }
         } else {
             return R.error(500, "无权限访问！");
         }
 
-        List<OotdImage> ootdImageList;
+
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
+        Page<OotdImage> ootdImageResult;
+        List<OotdImage> ootdImageList;
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
-        Page<OotdImage> ootdImageResult;
         if (type == 0) {  // 查询全部
-            ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().orderByDesc("ootdNo"));
+            ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("userId", openId).orderByDesc("ootdNo"));
         } else {  // 根据状态查询
-            ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", type).orderByDesc("ootdNo"));
+            ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("userId", openId).eq("status", type).orderByDesc("ootdNo"));
         }
         resultMap.put("total", ootdImageResult.getTotal());
         resultMap.put("totalPage", +ootdImageResult.getPages());
         ootdImageList = ootdImageResult.getRecords();
         resultMap.put("page", page);
+        resultMap.put("ootdImageList", ootdImageList);
+        return R.ok(resultMap);
+    }
+
+
+    /**
+     * 显示所有生成的虚拟试衣
+     * @return
+     */
+    @RequestMapping("/listAll")
+    public R listAll() {
+        Page<OotdImage> pageOotdImage = new Page<>();
+        Page<OotdImage> ootdImageResult;
+        List<OotdImage> ootdImageList;
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).orderByDesc("ootdNo"));
+        ootdImageList = ootdImageResult.getRecords();
         resultMap.put("ootdImageList", ootdImageList);
         return R.ok(resultMap);
     }

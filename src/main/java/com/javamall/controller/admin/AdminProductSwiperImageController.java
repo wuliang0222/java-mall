@@ -31,38 +31,38 @@ public class AdminProductSwiperImageController {
 
     /**
      * 根据条件分页查询
+     *
      * @return
      */
     @GetMapping("/list/{id}")
-    public R list(@PathVariable(value = "id") Integer id){
-        List<ProductSwiperImage> list = productSwiperImageService.list(new QueryWrapper<ProductSwiperImage>().eq("productId",id));
-        Map<String,Object> resultMap=new HashMap<>();
-        resultMap.put("productSwiperImageList",list);
+    public R list(@PathVariable(value = "id") Integer id) {
+        List<ProductSwiperImage> list = productSwiperImageService.list(new QueryWrapper<ProductSwiperImage>().eq("productId", id));
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("productSwiperImageList", list);
         return R.ok(resultMap);
     }
 
     /**
      * 上传详情轮播图
+     *
      * @param file
      * @return
      * @throws Exception
      */
     @RequestMapping("/uploadImage")
-    public Map<String,Object> uploadImage(MultipartFile file)throws Exception{
-        Map<String,Object> map=new HashMap<String,Object>();
-        if(!file.isEmpty()){
-            // 获取文件名
+    public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (!file.isEmpty()) {
             String fileName = file.getOriginalFilename();
-            // 获取文件的后缀名
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            String newFileName=DateUtil.getCurrentDateStr()+suffixName;
+            String newFileName = "productSwiper" + DateUtil.getCurrentDateStr() + suffixName;
+            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(productSwiperImagesFilePath + newFileName));
 
-            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(productSwiperImagesFilePath+newFileName));
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String,Object> map2=new HashMap<String,Object>();
+            Map<String, Object> map2 = new HashMap<String, Object>();
             map2.put("title", newFileName);
-            map2.put("src", "/image/productSwiperImgs/"+newFileName);
+            map2.put("src", "/image/productSwiperImgs/" + newFileName);
             map.put("data", map2);
         }
         return map;
@@ -70,22 +70,24 @@ public class AdminProductSwiperImageController {
 
     /**
      * 添加详情轮播图
+     *
      * @param productSwiperImage
      * @return
      */
     @PostMapping("/add")
-    public R add(@RequestBody ProductSwiperImage productSwiperImage){
+    public R add(@RequestBody ProductSwiperImage productSwiperImage) {
         productSwiperImageService.saveOrUpdate(productSwiperImage);
         return R.ok();
     }
 
     /**
      * 删除
+     *
      * @param id
      * @return
      */
     @GetMapping("/delete/{id}")
-    public R delete(@PathVariable(value = "id") Integer id){
+    public R delete(@PathVariable(value = "id") Integer id) {
         productSwiperImageService.removeById(id);
         return R.ok();
     }

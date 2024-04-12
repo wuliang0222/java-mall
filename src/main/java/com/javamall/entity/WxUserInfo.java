@@ -30,7 +30,7 @@ public class WxUserInfo implements Serializable {
     private Date lastLoginDate; // 最后登录日期
 
     @TableField(select = false,exist = false)
-    private String code; // 微信用户code
+    private String code; // 微信用户code 5分钟过期
 
 
 }

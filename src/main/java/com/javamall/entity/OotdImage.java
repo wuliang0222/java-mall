@@ -29,6 +29,8 @@ public class OotdImage {
 
     private Integer status = 1; // 虚拟试衣状态 0 全部订单  1 未生成   2 已生成
 
+    private Integer category = 0; // 虚拟试衣种类 0 衣服 1 裤子 2 裙子
+
     @JsonSerialize(using = CustomDateTimeSerializer.class)
     private Date createDate; // 虚拟试衣创建日期
 

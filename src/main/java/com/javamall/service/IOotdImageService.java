@@ -25,5 +25,5 @@ public interface IOotdImageService extends IService<OotdImage> {
      */
     public Long getTotal(Map<String,Object> map);
 
-    String ootd(String model, String garment, int category) throws Exception;
+    String ootd(String model, String garment, Integer category,OotdImage ootdImage);
 }
