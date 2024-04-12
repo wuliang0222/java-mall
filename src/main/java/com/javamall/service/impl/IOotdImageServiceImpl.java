@@ -6,6 +6,7 @@ import com.javamall.entity.Product;
 import com.javamall.mapper.OotdImageMapper;
 import com.javamall.service.IOotdImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -38,20 +39,23 @@ public class IOotdImageServiceImpl extends ServiceImpl<OotdImageMapper, OotdImag
     }
 
     @Override
-    public String ootd(String model, String garment, Integer category, OotdImage ootdImage) {
+    @Async
+    public void ootd(String model, String garment, Integer category, OotdImage ootdImage) {
         String pythonScriptPath = "F:\\300-Program\\310-Code\\ootd\\ootd_dc.py";
-        String URL = "file:F:/300-Program/310-Code/images/";
-        String[] categorys = {"Upper-body", "Lower-body", "Dress"};
-        System.out.println("model" + model);
-        System.out.println("garment" + garment);
+        String URL = "F:/300-Program/310-Code/images/";
+        String[] categories = {"Upper-body", "Lower-body", "Dress"};
+
         // 创建参数列表
         List<String> command = new ArrayList<>();
         command.add("python");
         command.add(pythonScriptPath);
         command.add(URL + "bodyImgs/" + model);
         command.add(URL + "clothingImgs/" + garment);
-        command.add(categorys[category]);
+        command.add(categories[category]);
         System.out.println("java-ootd启动");
+        System.out.println(URL + "bodyImgs/" + model);
+        System.out.println(URL + "clothingImgs/" + garment);
+        System.out.println(categories[category]);
         String ootdImageUrl = null;
         // 启动进程
         try {
@@ -59,14 +63,16 @@ public class IOotdImageServiceImpl extends ServiceImpl<OotdImageMapper, OotdImag
             Process process = pb.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             while (true) {
-                String line = reader.readLine(); // 读取一行内容
+                String line = reader.readLine();
                 if (line == null) {
-                    break; // 如果读到了文件结尾，退出循环
+                    break;
                 }
-                ootdImageUrl = line; // 保存读取到的内容到变量中
+                ootdImageUrl = line;
                 System.out.println("Python 脚本输出：" + ootdImageUrl);
             }
-            if (!process.waitFor(5, TimeUnit.MINUTES)) {
+
+            // 超时处理
+            if (!process.waitFor(5, TimeUnit.MINUTES)) { // 超时
                 System.err.println("Python脚本执行超时");
                 process.destroy();
                 throw new Exception("生成失败");
@@ -82,7 +88,5 @@ public class IOotdImageServiceImpl extends ServiceImpl<OotdImageMapper, OotdImag
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return "2";
     }
 }
