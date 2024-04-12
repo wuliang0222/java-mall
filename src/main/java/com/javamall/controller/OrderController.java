@@ -43,28 +43,19 @@ public class OrderController {
     @RequestMapping("/create")
     public R create(@RequestBody Order order, @RequestHeader(value = "token") String token) {
         System.out.println("创建订单");
-        //判断token是否为空
+        Claims claims;
+        // 判断token是否为空
         if (StringUtil.isNotEmpty(token)) {
-            //判断token是否失效
-            Claims claims = JwtUtils.validateJWT(token).getClaims();
-            if (claims != null) {
-                String openId = claims.getId();
-                System.out.println("openid" + openId);
-                order.setUserId(openId);
-                order.setOrderNo("order" + DateUtil.getCurrentDateStr());
-                order.setCreateDate(new Date());
-                //支付时间
-                if (order.getStatus() == 2) {
-                    order.setPayDate(new Date());
-                }
-            } else {
-                return R.error(500, "鉴权失败");
+            // 判断token是否失效
+            claims = JwtUtils.validateJWT(token).getClaims();
+            if (claims == null) {
+                return R.error(500, "鉴权失败！");
             }
         } else {
-            return R.error(500, "无权限访问");
+            return R.error(500, "无权限访问！");
         }
 
-        //订单的所有商品信息
+        // 订单的所有商品信息
         OrderDetail[] goods = order.getGoods();
         for (int i = 0; i < goods.length; i++) {
             OrderDetail orderDetail = goods[i];
@@ -77,22 +68,37 @@ public class OrderController {
             if (quantity > stock) {
                 // 如果购买数量大于库存，则返回错误信息
                 return R.error("商品库存不足");
-            } else {
-                // 如果购买数量小于等于库存，则减少库存
-                // 计算剩余库存
-                int remainingStock = stock - quantity;
-                // 更新商品的库存信息
-                product.setStock(remainingStock);
-                productService.saveOrUpdate(product);
-                // 将订单商品保存到数据库中
-                orderDetail.setMId(order.getId());
-                orderDetailService.save(orderDetail);
             }
         }
 
+        // 创建订单信息
+        String openId = claims.getId();
+        order.setUserId(openId);
+        order.setOrderNo("order" + DateUtil.getCurrentDateStr());
+        order.setCreateDate(new Date());
+        if (order.getStatus() == 2) {
+            order.setPayDate(new Date());
+        }
+        orderService.save(order);
+
+        for (int i = 0; i < goods.length; i++) {
+            OrderDetail orderDetail = goods[i];
+            // 获取订单商品的购买数量
+            int quantity = orderDetail.getGoodsNumber();
+            // 获取商品的库存数量
+            Product product = productService.getById(orderDetail.getGoodsId());
+            Integer stock = product.getStock();
+            // 计算剩余库存
+            int remainingStock = stock - quantity;
+            // 更新商品的库存信息
+            product.setStock(remainingStock);
+            // 将订单商品保存到数据库中
+            orderDetail.setMId(order.getId());
+            orderDetailService.save(orderDetail);
+        }
+
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        String orderNo = order.getOrderNo();
-        resultMap.put("orderNo", orderNo);
+        resultMap.put("orderNo", order.getOrderNo());
         return R.ok(resultMap);
     }
 

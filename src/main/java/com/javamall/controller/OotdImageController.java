@@ -154,16 +154,22 @@ public class OotdImageController {
 
     /**
      * 显示所有生成的虚拟试衣
+     *
      * @return
      */
     @RequestMapping("/listAll")
-    public R listAll() {
-        Page<OotdImage> pageOotdImage = new Page<>();
-        Page<OotdImage> ootdImageResult;
+    public R listAll(Integer page, Integer pageSize) {
+
         List<OotdImage> ootdImageList;
+        Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        Page<OotdImage> ootdImageResult;
         ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).orderByDesc("ootdNo"));
+
+        resultMap.put("total", ootdImageResult.getTotal());
+        resultMap.put("totalPage", +ootdImageResult.getPages());
         ootdImageList = ootdImageResult.getRecords();
+        resultMap.put("page", page);
         resultMap.put("ootdImageList", ootdImageList);
         return R.ok(resultMap);
     }

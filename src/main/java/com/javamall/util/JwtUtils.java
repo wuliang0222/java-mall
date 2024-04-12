@@ -53,7 +53,8 @@ public class JwtUtils {
             claims = parseJWT(jwtStr);
             checkResult.setSuccess(true);
             checkResult.setClaims(claims);
-        } catch (ExpiredJwtException e) {
+        }
+        catch (ExpiredJwtException e) {
             checkResult.setErrCode(SystemConstant.JWT_ERRCODE_EXPIRE);
             checkResult.setSuccess(false);
         } catch (Exception e) {
