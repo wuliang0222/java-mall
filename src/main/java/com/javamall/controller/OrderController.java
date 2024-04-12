@@ -2,14 +2,14 @@ package com.javamall.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.javamall.entity.Order;
-import com.javamall.entity.OrderDetail;
-import com.javamall.entity.R;
+import com.javamall.entity.*;
 import com.javamall.properties.WeixinProperties;
 import com.javamall.service.IOrderDetailService;
 import com.javamall.service.IOrderService;
+import com.javamall.service.IProductService;
 import com.javamall.util.*;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +32,8 @@ public class OrderController {
     private IOrderDetailService orderDetailService;
 
     @Autowired
-    private WeixinProperties weixinProperties;
+    private IProductService productService;
 
-    @Autowired
-    private HttpClientUtil httpClientUtil;
 
     /**
      * 创建订单，返回订单号
@@ -60,22 +58,38 @@ public class OrderController {
                     order.setPayDate(new Date());
                 }
             } else {
-                return R.error(500, "鉴权失败！");
+                return R.error(500, "鉴权失败");
             }
         } else {
-            return R.error(500, "无权限访问！");
+            return R.error(500, "无权限访问");
         }
 
-        //插入数据库 订单详情
         //订单的所有商品信息
         OrderDetail[] goods = order.getGoods();
-        //要先插入订单，才会有主键id
-        orderService.save(order);
         for (int i = 0; i < goods.length; i++) {
             OrderDetail orderDetail = goods[i];
-            orderDetail.setMId(order.getId());
-            orderDetailService.save(orderDetail);
+            // 获取订单商品的购买数量
+            int quantity = orderDetail.getGoodsNumber();
+            // 获取商品的库存数量
+            Product product = productService.getById(orderDetail.getGoodsId());
+            Integer stock = product.getStock();
+            // 检查购买数量是否大于库存
+            if (quantity > stock) {
+                // 如果购买数量大于库存，则返回错误信息
+                return R.error("商品库存不足");
+            } else {
+                // 如果购买数量小于等于库存，则减少库存
+                // 计算剩余库存
+                int remainingStock = stock - quantity;
+                // 更新商品的库存信息
+                product.setStock(remainingStock);
+                productService.saveOrUpdate(product);
+                // 将订单商品保存到数据库中
+                orderDetail.setMId(order.getId());
+                orderDetailService.save(orderDetail);
+            }
         }
+
         Map<String, Object> resultMap = new HashMap<String, Object>();
         String orderNo = order.getOrderNo();
         resultMap.put("orderNo", orderNo);
