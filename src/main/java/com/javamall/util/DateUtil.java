@@ -1,7 +1,5 @@
 package com.javamall.util;
 
-import com.javamall.util.StringUtil;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

@@ -4,6 +4,7 @@ package com.javamall.interceptor;
 import com.javamall.util.JwtUtils;
 import com.javamall.util.StringUtil;
 import io.jsonwebtoken.Claims;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SysInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         String path = request.getRequestURI();
         if (handler instanceof HandlerMethod) {
             //判断token是否为空

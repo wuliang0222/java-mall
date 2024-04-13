@@ -6,8 +6,6 @@ import com.javamall.entity.PageBean;
 import com.javamall.entity.R;
 import com.javamall.entity.WxUserInfo;
 import com.javamall.service.IWxUserInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +24,6 @@ public class AdminUserController {
 
     /**
      * 根据条件分页查询用户信息
-     *
-     * @param pageBean
-     * @return
      */
     @RequestMapping("/list")
     public R list(@RequestBody PageBean pageBean) {
