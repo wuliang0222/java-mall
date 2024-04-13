@@ -3,9 +3,6 @@ package com.javamall.util;
 import com.javamall.entity.R;
 import io.jsonwebtoken.Claims;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class TokenUtil {
 
     public static R checkToken(String token) {
