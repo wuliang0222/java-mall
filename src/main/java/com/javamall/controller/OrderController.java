@@ -10,6 +10,7 @@ import com.javamall.util.*;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.*;
 
 /**
@@ -30,17 +31,10 @@ public class OrderController {
      */
     @RequestMapping("/create")
     public R create(@RequestBody Order order, @RequestHeader(value = "token") String token) {
-        Claims claims;
-        // 判断token是否为空
-        if (StringUtil.isNotEmpty(token)) {
-            // 判断token是否失效
-            claims = JwtUtils.validateJWT(token).getClaims();
-            if (claims == null) {
-                return R.error(500, "鉴权失败！");
-            }
-        } else {
-            return R.error(500, "无权限访问！");
-        }
+        // 判断token
+        R r = TokenUtil.checkToken(token);
+        if (r.get("code").equals(500)) return r;
+        String openId = r.get("msg").toString();
 
         // 检查库存
         if (!orderService.checkStock(order)) {
@@ -48,7 +42,7 @@ public class OrderController {
         }
 
         // 创建订单信息
-        order = orderService.createOrder(order, claims);
+        order = orderService.createOrder(order, openId);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("orderNo", order.getOrderNo());
@@ -60,18 +54,17 @@ public class OrderController {
      */
     @RequestMapping("/list")
     public R list(Integer type, Integer page, Integer pageSize, @RequestHeader(value = "token") String token) {
-        String openId;
+        Claims claims;
         if (StringUtil.isNotEmpty(token)) {
-            Claims claims = JwtUtils.validateJWT(token).getClaims();
+            claims = JwtUtils.validateJWT(token).getClaims();
             if (claims == null) {
                 return R.error(500, "鉴权失败！");
-            } else {
-                openId = claims.getId();
             }
         } else {
             return R.error(500, "无权限访问！");
         }
 
+        String openId = claims.getId();
         List<Order> orderList;
         Page<Order> pageOrder = new Page<>(page, pageSize);
         Map<String, Object> resultMap = new HashMap<>();

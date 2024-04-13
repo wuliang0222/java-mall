@@ -8,6 +8,7 @@ import com.javamall.service.IOotdImageService;
 import com.javamall.util.DateUtil;
 import com.javamall.util.JwtUtils;
 import com.javamall.util.StringUtil;
+import com.javamall.util.TokenUtil;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,23 +75,14 @@ public class OotdImageController {
      */
     @RequestMapping("/create")
     public R create(@RequestBody OotdImage ootdImage, @RequestHeader(value = "token") String token) {
-        Claims claims;
-        //判断token是否为空
-        if (StringUtil.isNotEmpty(token)) {
-            //判断token是否失效
-            claims = JwtUtils.validateJWT(token).getClaims();
-            if (claims == null) {
-                return R.error(500, "鉴权失败！");
-            }
-        } else {
-            return R.error(500, "无权限访问！");
-        }
+        // 判断token
+        R r = TokenUtil.checkToken(token);
+        if (r.get("code").equals(500)) return r;
+        String openId = r.get("msg").toString();
 
-        String openId = claims.getId();
         ootdImage.setUserId(openId);
         ootdImage.setOotdNo("ootd" + DateUtil.getCurrentDateStr());
         ootdImage.setCreateDate(new Date());
-
         ootdImageService.save(ootdImage);
         Map<String, Object> resultMap = new HashMap<>();
         String ootdNo = ootdImage.getOotdNo();
@@ -113,21 +105,13 @@ public class OotdImageController {
      */
     @RequestMapping("/list")
     public R list(Integer type, Integer page, Integer pageSize, @RequestHeader(value = "token") String token) {
-        String openId;
-        if (StringUtil.isNotEmpty(token)) {
-            Claims claims = JwtUtils.validateJWT(token).getClaims();
-            if (claims == null) {
-                return R.error(500, "鉴权失败！");
-            } else {
-                openId = claims.getId();
-            }
-        } else {
-            return R.error(500, "无权限访问！");
-        }
+        // 判断token
+        R r = TokenUtil.checkToken(token);
+        if (r.get("code").equals(500)) return r;
+        String openId = r.get("msg").toString();
 
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
         Page<OotdImage> ootdImageResult;
-        List<OotdImage> ootdImageList;
         Map<String, Object> resultMap = new HashMap<>();
 
         if (type == 0) {  // 查询全部
@@ -137,7 +121,7 @@ public class OotdImageController {
         }
         resultMap.put("total", ootdImageResult.getTotal());
         resultMap.put("totalPage", +ootdImageResult.getPages());
-        ootdImageList = ootdImageResult.getRecords();
+        List<OotdImage> ootdImageList = ootdImageResult.getRecords();
         resultMap.put("page", page);
         resultMap.put("ootdImageList", ootdImageList);
         return R.ok(resultMap);
@@ -149,15 +133,13 @@ public class OotdImageController {
      */
     @RequestMapping("/listAll")
     public R listAll(Integer page, Integer pageSize) {
-        List<OotdImage> ootdImageList;
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
         Map<String, Object> resultMap = new HashMap<>();
-        Page<OotdImage> ootdImageResult;
-        ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).orderByDesc("ootdNo"));
+        Page<OotdImage> ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).orderByDesc("ootdNo"));
 
         resultMap.put("total", ootdImageResult.getTotal());
         resultMap.put("totalPage", +ootdImageResult.getPages());
-        ootdImageList = ootdImageResult.getRecords();
+        List<OotdImage> ootdImageList = ootdImageResult.getRecords();
         resultMap.put("page", page);
         resultMap.put("ootdImageList", ootdImageList);
         return R.ok(resultMap);

@@ -25,7 +25,7 @@ public interface IOrderService extends IService<Order> {
     /**
      * 创建订单
      */
-    Order createOrder(Order order, Claims claims);
+    Order createOrder(Order order, String openId);
 
     /**
      * 检查库存

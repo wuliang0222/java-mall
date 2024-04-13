@@ -47,9 +47,8 @@ public class IOrderServiceImpl extends ServiceImpl<OrderMapper, Order> implement
     }
 
     @Override
-    public Order createOrder(Order order, Claims claims) {
+    public Order createOrder(Order order, String openId) {
         // 创建订单信息
-        String openId = claims.getId();
         order.setUserId(openId);
         order.setOrderNo("order" + DateUtil.getCurrentDateStr());
         order.setCreateDate(new Date());

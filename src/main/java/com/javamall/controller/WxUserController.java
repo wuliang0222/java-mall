@@ -10,6 +10,9 @@ import com.javamall.properties.WeixinProperties;
 import com.javamall.service.IWxUserInfoService;
 import com.javamall.util.HttpClientUtil;
 import com.javamall.util.JwtUtils;
+import com.javamall.util.StringUtil;
+import com.javamall.util.TokenUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -41,7 +44,8 @@ public class WxUserController {
      */
     @RequestMapping("/validate")
     public R validate(@RequestHeader(value = "token") String token) {
-        return JwtUtils.validateJWT(token).getClaims() == null ? R.error() : R.ok();
+        // 判断token
+        return TokenUtil.checkToken(token);
     }
 
     /**
