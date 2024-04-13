@@ -90,7 +90,6 @@ public class AdminBigTypeController {
      */
     @GetMapping("/{id}")
     public R findById(@PathVariable(value = "id") Integer id) {
-        System.out.println("id=" + id);
         BigType bigType = bigTypeService.getById(id);
         Map<String, Object> map = new HashMap<>();
         map.put("bigType", bigType);
@@ -102,16 +101,19 @@ public class AdminBigTypeController {
      */
     @RequestMapping("/uploadImage")
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (!file.isEmpty()) {
             String fileName = file.getOriginalFilename();
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            String suffixName = null;
+            if (fileName != null) {
+                suffixName = fileName.substring(fileName.lastIndexOf("."));
+            }
             String newFileName = "bigType" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(bigTypeImagesFilePath + newFileName));
 
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String, Object> dateMap = new HashMap<String, Object>();
+            Map<String, Object> dateMap = new HashMap<>();
             //返回给前端新的图片地址
             dateMap.put("title", newFileName);
             dateMap.put("src", "/image/bigType/" + newFileName);

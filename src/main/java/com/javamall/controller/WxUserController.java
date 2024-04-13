@@ -38,8 +38,6 @@ public class WxUserController {
 
     /**
      * 验证token超时
-     *
-     * @return
      */
     @RequestMapping("/validate")
     public R validate(@RequestHeader(value = "token") String token) {
@@ -48,9 +46,6 @@ public class WxUserController {
 
     /**
      * 微信用户登录
-     *
-     * @param wxUserInfo
-     * @return
      */
     @RequestMapping("/wxlogin")
     public R wxLogin(@RequestBody WxUserInfo wxUserInfo) {
@@ -76,7 +71,7 @@ public class WxUserController {
 
         // 利用jwt生成token返回到前端
         String token = JwtUtils.createJWT(openid, wxUserInfo.getNickName(), SystemConstant.JWT_TTL);
-        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("token", token);
         return R.ok(resultMap);
     }

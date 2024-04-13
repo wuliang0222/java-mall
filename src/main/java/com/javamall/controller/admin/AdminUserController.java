@@ -6,7 +6,6 @@ import com.javamall.entity.PageBean;
 import com.javamall.entity.R;
 import com.javamall.entity.WxUserInfo;
 import com.javamall.service.IWxUserInfoService;
-import com.javamall.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,6 @@ public class AdminUserController {
 
     @Autowired
     private IWxUserInfoService wxUserInfoService;
-
-    private final static Logger logger = LoggerFactory.getLogger(AdminUserController.class);
 
     /**
      * 根据条件分页查询用户信息

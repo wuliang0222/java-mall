@@ -28,9 +28,6 @@ public class OotdImageController {
     @Autowired
     private IOotdImageService ootdImageService;
 
-    @Value("${ootdImagesFilePath}")
-    private String ootdImagesFilePath;
-
     @Value("${bodyImagesFilePath}")
     private String bodyImagesFilePath;
 
@@ -44,20 +41,20 @@ public class OotdImageController {
     public Map<String, Object> uploadOotdImageUpper(@RequestParam("file") MultipartFile file, @RequestParam Map<String, String> formData) throws Exception {
         // model身体、clothing衣服
         String prefixName = formData.get("type");
-        System.out.println("prefixName:" + prefixName);
-
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (!file.isEmpty()) {
             // 获取文件名
             String fileName = file.getOriginalFilename();
-            System.out.println("fileName:" + fileName);
             // 获取文件的后缀名
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            String suffixName = null;
+            if (fileName != null) {
+                suffixName = fileName.substring(fileName.lastIndexOf("."));
+            }
             // 用前缀+时间戳作为文件名
             String newFileName = prefixName + DateUtil.getCurrentDateStr() + suffixName;
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String, Object> map2 = new HashMap<String, Object>();
+            Map<String, Object> map2 = new HashMap<>();
             map2.put("title", newFileName);
             // 根据prefixName判断图片种类 保存到对应磁盘文件
             if (prefixName.equals("model")) { // 身体
@@ -69,35 +66,33 @@ public class OotdImageController {
             }
             map.put("data", map2);
         }
-        System.out.println("map:" + map);
         return map;
     }
 
     /**
      * 创建虚拟试衣，返回虚拟试衣号
-     *
-     * @return
      */
     @RequestMapping("/create")
     public R create(@RequestBody OotdImage ootdImage, @RequestHeader(value = "token") String token) {
+        Claims claims;
         //判断token是否为空
         if (StringUtil.isNotEmpty(token)) {
             //判断token是否失效
-            Claims claims = JwtUtils.validateJWT(token).getClaims();
-            if (claims != null) {
-                String openId = claims.getId();
-                ootdImage.setUserId(openId);
-                ootdImage.setOotdNo("ootd" + DateUtil.getCurrentDateStr());
-                ootdImage.setCreateDate(new Date());
-            } else {
+            claims = JwtUtils.validateJWT(token).getClaims();
+            if (claims == null) {
                 return R.error(500, "鉴权失败！");
             }
         } else {
             return R.error(500, "无权限访问！");
         }
 
+        String openId = claims.getId();
+        ootdImage.setUserId(openId);
+        ootdImage.setOotdNo("ootd" + DateUtil.getCurrentDateStr());
+        ootdImage.setCreateDate(new Date());
+
         ootdImageService.save(ootdImage);
-        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<>();
         String ootdNo = ootdImage.getOotdNo();
         resultMap.put("ootdNo", ootdNo);
 
@@ -108,7 +103,6 @@ public class OotdImageController {
             Integer category = ootdImage.getCategory();
             ootdImageService.ootd(bodyImage, clothingImage, category, ootdImage);
         }).start();
-
 
         return R.ok(resultMap);
     }
@@ -134,7 +128,7 @@ public class OotdImageController {
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
         Page<OotdImage> ootdImageResult;
         List<OotdImage> ootdImageList;
-        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<>();
 
         if (type == 0) {  // 查询全部
             ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("userId", openId).orderByDesc("ootdNo"));
@@ -152,15 +146,12 @@ public class OotdImageController {
 
     /**
      * 显示所有生成的虚拟试衣
-     *
-     * @return
      */
     @RequestMapping("/listAll")
     public R listAll(Integer page, Integer pageSize) {
-
         List<OotdImage> ootdImageList;
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
-        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> resultMap = new HashMap<>();
         Page<OotdImage> ootdImageResult;
         ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).orderByDesc("ootdNo"));
 
@@ -174,11 +165,9 @@ public class OotdImageController {
 
     /**
      * 删除
-     * @param id
-     * @return
      */
     @RequestMapping("/delete")
-    public R delete(Integer id){
+    public R delete(Integer id) {
         ootdImageService.removeById(id);
         return R.ok();
     }

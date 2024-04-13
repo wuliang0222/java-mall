@@ -26,12 +26,9 @@ public class AdminOrderController {
 
     /**
      * 根据条件分页查询
-     * @param pageBean
-     * @return
      */
     @RequestMapping("/list")
     public R list(@RequestBody PageBean pageBean){
-        System.out.println("pageBean" + pageBean);
         //查询条件
         Map<String,Object> query=new HashMap<>();
         query.put("orderNo",pageBean.getQuery().trim());
@@ -50,8 +47,6 @@ public class AdminOrderController {
 
     /**
      * 更新订单状态
-     * @param order
-     * @return
      */
     @PostMapping("/updateStatus")
     public R updateStatus(@RequestBody Order order){
@@ -63,8 +58,6 @@ public class AdminOrderController {
 
     /**
      * 删除
-     * @param id
-     * @return
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id){

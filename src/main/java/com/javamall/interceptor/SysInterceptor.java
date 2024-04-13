@@ -17,7 +17,6 @@ public class SysInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();
-        System.out.println(path);
         if (handler instanceof HandlerMethod) {
             //判断token是否为空
             String token = request.getHeader("token");

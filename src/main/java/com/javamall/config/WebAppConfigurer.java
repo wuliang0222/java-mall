@@ -14,7 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebAppConfigurer implements WebMvcConfigurer {
-    private final String URL = "file:F:/300-Program/310-Code/images";
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -43,6 +42,7 @@ public class WebAppConfigurer implements WebMvcConfigurer {
     //资源定位
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String URL = "file:F:/300-Program/310-Code/images";
         registry.addResourceHandler("/image/swiper/**").addResourceLocations(URL + "/swiperImgs/");
         registry.addResourceHandler("/image/bigType/**").addResourceLocations(URL + "/bigTypeImgs/");
         registry.addResourceHandler("/image/product/**").addResourceLocations(URL + "/productImgs/");

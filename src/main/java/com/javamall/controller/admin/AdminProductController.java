@@ -36,9 +36,6 @@ public class AdminProductController {
 
     /**
      * 根据条件分页查询
-     *
-     * @param pageBean
-     * @return
      */
     @RequestMapping("/list")
     public R list(@RequestBody PageBean pageBean) {
@@ -59,10 +56,6 @@ public class AdminProductController {
 
     /**
      * 更新热门状态
-     *
-     * @param id
-     * @param hot
-     * @return
      */
     @GetMapping("/updateHot/{id}/state/{hot}")
     public R updateHot(@PathVariable(value = "id") Integer id, @PathVariable(value = "hot") boolean hot) {
@@ -79,10 +72,6 @@ public class AdminProductController {
 
     /**
      * 更新首页轮播图状态
-     *
-     * @param id
-     * @param swiper
-     * @return
      */
     @GetMapping("/updateSwiper/{id}/state/{swiper}")
     public R updateSwiper(@PathVariable(value = "id") Integer id, @PathVariable(value = "swiper") boolean swiper) {
@@ -94,23 +83,22 @@ public class AdminProductController {
 
     /**
      * 上传商品图片
-     *
-     * @param file
-     * @return
-     * @throws Exception
      */
     @RequestMapping("/uploadImage")
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (!file.isEmpty()) {
             String fileName = file.getOriginalFilename();
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            String suffixName = null;
+            if (fileName != null) {
+                suffixName = fileName.substring(fileName.lastIndexOf("."));
+            }
             String newFileName = "product" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(productImagesFilePath + newFileName));
 
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String, Object> map2 = new HashMap<String, Object>();
+            Map<String, Object> map2 = new HashMap<>();
             map2.put("title", newFileName);
             map2.put("src", "/image/product/" + newFileName);
             map.put("data", map2);
@@ -120,9 +108,6 @@ public class AdminProductController {
 
     /**
      * 修改商品图片
-     *
-     * @param product
-     * @return
      */
     @PostMapping("/saveImage")
     public R saveImage(@RequestBody Product product) {
@@ -134,23 +119,22 @@ public class AdminProductController {
 
     /**
      * 上传首页轮播图
-     *
-     * @param file
-     * @return
-     * @throws Exception
      */
     @RequestMapping("/uploadSwiperImage")
     public Map<String, Object> uploadSwiperImage(MultipartFile file) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (!file.isEmpty()) {
             String fileName = file.getOriginalFilename();
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            String suffixName = null;
+            if (fileName != null) {
+                suffixName = fileName.substring(fileName.lastIndexOf("."));
+            }
             String newFileName = "swiper" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(swiperImagesFilePath + newFileName));
 
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String, Object> map2 = new HashMap<String, Object>();
+            Map<String, Object> map2 = new HashMap<>();
             map2.put("title", newFileName);
             //虚拟请求路径
             map2.put("src", "/image/swiper/" + newFileName);
@@ -161,9 +145,6 @@ public class AdminProductController {
 
     /**
      * 更新首页轮播图
-     *
-     * @param product
-     * @return
      */
     @PostMapping("/saveSwiper")
     public R saveSwiper(@RequestBody Product product) {
@@ -176,9 +157,6 @@ public class AdminProductController {
 
     /**
      * 添加、编辑商品信息
-     *
-     * @param product
-     * @return
      */
     @PostMapping("/save")
     public R save(@RequestBody Product product) {
@@ -192,9 +170,6 @@ public class AdminProductController {
 
     /**
      * 删除
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id) {

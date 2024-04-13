@@ -23,13 +23,9 @@ public class AdminOotdImageController {
 
     /**
      * 根据条件分页查询
-     *
-     * @param pageBean
-     * @return
      */
     @RequestMapping("/list")
     public R list(@RequestBody PageBean pageBean) {
-        System.out.println("pageBean" + pageBean);
         //查询条件
         Map<String, Object> query = new HashMap<>();
         query.put("ootdNo", pageBean.getQuery().trim());
@@ -48,8 +44,6 @@ public class AdminOotdImageController {
 
     /**
      * 删除
-     * @param id
-     * @return
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id){

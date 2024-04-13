@@ -7,8 +7,6 @@ import com.javamall.entity.R;
 import com.javamall.service.IAdminService;
 import com.javamall.util.JwtUtils;
 import com.javamall.util.StringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +24,8 @@ public class AdminController {
     @Autowired
     private IAdminService adminService;
 
-    private final static Logger logger= LoggerFactory.getLogger(AdminController.class);
-
     /**
      * 管理员登录
-     * @param admin
-     * @return
      */
     @PostMapping("/adminLogin")
     public R adminLogin(@RequestBody Admin admin){
@@ -55,15 +49,13 @@ public class AdminController {
 
         //用户名密码正确 生成token
         String token = JwtUtils.createJWT("-1", "admin", SystemConstant.JWT_TTL);
-        Map<String,Object> resultMap=new HashMap<String,Object>();
+        Map<String,Object> resultMap=new HashMap<>();
         resultMap.put("token",token);
         return R.ok(resultMap);
     }
 
     /**
      * 修改密码
-     * @param admin
-     * @return
      */
     @PostMapping("/admin/modifyPassword")
     public R modifyPassword(@RequestBody Admin admin){

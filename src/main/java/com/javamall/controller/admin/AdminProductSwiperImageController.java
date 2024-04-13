@@ -31,8 +31,6 @@ public class AdminProductSwiperImageController {
 
     /**
      * 根据条件分页查询
-     *
-     * @return
      */
     @GetMapping("/list/{id}")
     public R list(@PathVariable(value = "id") Integer id) {
@@ -44,23 +42,22 @@ public class AdminProductSwiperImageController {
 
     /**
      * 上传详情轮播图
-     *
-     * @param file
-     * @return
-     * @throws Exception
      */
     @RequestMapping("/uploadImage")
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (!file.isEmpty()) {
             String fileName = file.getOriginalFilename();
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
+            String suffixName = null;
+            if (fileName != null) {
+                suffixName = fileName.substring(fileName.lastIndexOf("."));
+            }
             String newFileName = "productSwiper" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(productSwiperImagesFilePath + newFileName));
 
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String, Object> map2 = new HashMap<String, Object>();
+            Map<String, Object> map2 = new HashMap<>();
             map2.put("title", newFileName);
             map2.put("src", "/image/productSwiperImgs/" + newFileName);
             map.put("data", map2);
@@ -70,9 +67,6 @@ public class AdminProductSwiperImageController {
 
     /**
      * 添加详情轮播图
-     *
-     * @param productSwiperImage
-     * @return
      */
     @PostMapping("/add")
     public R add(@RequestBody ProductSwiperImage productSwiperImage) {
@@ -82,9 +76,6 @@ public class AdminProductSwiperImageController {
 
     /**
      * 删除
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id) {

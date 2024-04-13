@@ -30,13 +30,9 @@ public class AdminSmallTypeController {
 
     /**
      * 根据条件分页查询
-     *
-     * @param pageBean
-     * @return
      */
     @RequestMapping("/list")
     public R list(@RequestBody PageBean pageBean) {
-        System.out.println("bean" + pageBean);
         Map<String, Object> map = new HashMap<>();
         map.put("name", pageBean.getQuery().trim());
         map.put("start", (pageBean.getPageNum() - 1) * pageBean.getPageSize());
@@ -47,17 +43,11 @@ public class AdminSmallTypeController {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("smallTypeList", list);
         resultMap.put("total", total);
-
-        System.out.println(map.get("start"));
-        System.out.println(map.get("pageSize"));
         return R.ok(resultMap);
     }
 
     /**
      * 添加或者修改
-     *
-     * @param smallType
-     * @return
      */
     @PostMapping("/save")
     public R save(@RequestBody SmallType smallType) {
@@ -72,9 +62,6 @@ public class AdminSmallTypeController {
 
     /**
      * 删除
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id) {
@@ -89,8 +76,6 @@ public class AdminSmallTypeController {
 
     /**
      * 根据商品大类id，查询商品小类
-     *
-     * @return
      */
     @RequestMapping("/listAll/{bigTypeId}")
     public R listAll(@PathVariable(value = "bigTypeId") Integer bigTypeId) {
@@ -101,15 +86,11 @@ public class AdminSmallTypeController {
 
     /**
      * 根据商品小类id，查询对应的商品大类
-     *
-     * @param id
-     * @return
      */
     @GetMapping("/getBigTypeIdBySmallTypeId/{id}")
     public R getBigTypeIdBySmallTypeId(@PathVariable(value = "id") Integer id) {
         Map<String, Object> map = new HashMap<>();
         Integer bigTypeId = smallTypeService.getById(id).getBigTypeId();
-        System.out.println("bigTypeId=" + bigTypeId);
         map.put("bigTypeId", bigTypeId);
         return R.ok(map);
     }
