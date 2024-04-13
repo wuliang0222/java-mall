@@ -34,7 +34,6 @@ public class OrderController {
     @Autowired
     private IProductService productService;
 
-
     /**
      * 创建订单，返回订单号
      *
@@ -55,7 +54,7 @@ public class OrderController {
             return R.error(500, "无权限访问！");
         }
 
-        // 订单的所有商品信息
+        // 检查库存
         OrderDetail[] goods = order.getGoods();
         for (int i = 0; i < goods.length; i++) {
             OrderDetail orderDetail = goods[i];
@@ -76,26 +75,32 @@ public class OrderController {
         order.setUserId(openId);
         order.setOrderNo("order" + DateUtil.getCurrentDateStr());
         order.setCreateDate(new Date());
+        // 要先创建订单 订单详情才有主键
+        orderService.saveOrUpdate(order);
+
+        // 如果支付了 设置支付时间 扣除剩余库存
         if (order.getStatus() == 2) {
             order.setPayDate(new Date());
-        }
-        orderService.save(order);
 
-        for (int i = 0; i < goods.length; i++) {
-            OrderDetail orderDetail = goods[i];
-            // 获取订单商品的购买数量
-            int quantity = orderDetail.getGoodsNumber();
-            // 获取商品的库存数量
-            Product product = productService.getById(orderDetail.getGoodsId());
-            Integer stock = product.getStock();
-            // 计算剩余库存
-            int remainingStock = stock - quantity;
-            // 更新商品的库存信息
-            product.setStock(remainingStock);
-            // 将订单商品保存到数据库中
-            orderDetail.setMId(order.getId());
-            orderDetailService.save(orderDetail);
+            for (int i = 0; i < goods.length; i++) {
+                OrderDetail orderDetail = goods[i];
+                // 购买数量
+                int quantity = orderDetail.getGoodsNumber();
+                // 库存
+                Product product = productService.getById(orderDetail.getGoodsId());
+                Integer stock = product.getStock();
+
+                // 计算剩余库存
+                int remainingStock = stock - quantity;
+                // 更新商品的库存信息
+                product.setStock(remainingStock);
+                System.out.println("product:"+product.getStock());
+                productService.saveOrUpdate(product);
+                orderDetail.setMId(order.getId());
+                orderDetailService.save(orderDetail);
+            }
         }
+        orderService.saveOrUpdate(order);
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
         resultMap.put("orderNo", order.getOrderNo());
@@ -103,7 +108,7 @@ public class OrderController {
     }
 
     /**
-     * 订单查询  type 值 0 全部订单  1 待付款   2  待收货  3 退款/退货
+     * 订单查询  type 值 0 全部订单  1 待付款   2 待收货  3 退款/售后
      */
     @RequestMapping("/list")
     public R list(Integer type, Integer page, Integer pageSize, @RequestHeader(value = "token") String token) {
@@ -135,6 +140,19 @@ public class OrderController {
         resultMap.put("page", page);
         resultMap.put("orderList", orderList);
         return R.ok(resultMap);
+    }
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping("/delete")
+    public R delete(Integer id) {
+        orderDetailService.remove(new QueryWrapper<OrderDetail>().eq("mId", id));
+        orderService.removeById(id);
+        return R.ok();
     }
 
 

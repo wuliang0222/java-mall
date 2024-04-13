@@ -126,12 +126,10 @@ public class OotdImageController {
                 return R.error(500, "鉴权失败！");
             } else {
                 openId = claims.getId();
-                System.out.println(openId);
             }
         } else {
             return R.error(500, "无权限访问！");
         }
-
 
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
         Page<OotdImage> ootdImageResult;
@@ -174,5 +172,14 @@ public class OotdImageController {
         return R.ok(resultMap);
     }
 
-
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @RequestMapping("/delete")
+    public R delete(Integer id){
+        ootdImageService.removeById(id);
+        return R.ok();
+    }
 }
