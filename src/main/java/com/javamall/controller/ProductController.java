@@ -34,9 +34,9 @@ public class ProductController {
     @RequestMapping("/findSwiper")
     public R findSwiper(){
         List<Product> swiperList = productService.findSwiper();
-        Map<String,Object> map=new HashMap<>();
-        map.put("message",swiperList);
-        return R.ok(map);
+        Map<String,Object> resultMap=new HashMap<>();
+        resultMap.put("message",swiperList);
+        return R.ok(resultMap);
     }
 
     /**
@@ -45,9 +45,9 @@ public class ProductController {
     @RequestMapping("/findHot")
     public R findHot(){
         List<Product> productList = productService.findHot();
-        Map<String,Object> map=new HashMap<>();
-        map.put("message",productList);
-        return R.ok(map);
+        Map<String,Object> resultMap=new HashMap<>();
+        resultMap.put("message",productList);
+        return R.ok(resultMap);
     }
 
     /**
@@ -58,22 +58,20 @@ public class ProductController {
         Product product = productService.getById(id);
         List<ProductSwiperImage> productSwiperImageList = productSwiperImageService.list(new QueryWrapper<ProductSwiperImage>().eq("productId", product.getId()).orderByAsc("sort"));
         product.setProductSwiperImageList(productSwiperImageList);
-        Map<String,Object> map=new HashMap<>();
-        map.put("message",product);
-        return R.ok(map);
+        Map<String,Object> resultMap=new HashMap<>();
+        resultMap.put("message",product);
+        return R.ok(resultMap);
     }
 
     /**
      * 根据名称查询商品
      */
     @GetMapping("/search")
-    public R search(String q){
-        List<Product> producetList = productService.list(new QueryWrapper<Product>().like("name", q));
-        Map<String,Object> map=new HashMap<>();
-        map.put("message",producetList);
-        return R.ok(map);
+    public R search(String query){
+        List<Product> producetList = productService.list(new QueryWrapper<Product>().like("name", query));
+        Map<String,Object> resultMap=new HashMap<>();
+        resultMap.put("message",producetList);
+        return R.ok(resultMap);
     }
-
-
 
 }

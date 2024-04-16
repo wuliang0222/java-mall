@@ -38,9 +38,9 @@ public class BigTypeController {
     @RequestMapping("/findAll")
     public R findAll() {
         List<BigType> bigTypeList = bigTypeService.list(new QueryWrapper<BigType>().orderByAsc("id"));
-        Map<String, Object> map = new HashMap<>();
-        map.put("message", bigTypeList);
-        return R.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("message", bigTypeList);
+        return R.ok(resultMap);
     }
 
     /**
@@ -57,9 +57,10 @@ public class BigTypeController {
                 smallType.setProductList(productList);
             }
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("message", bigTypeList);
-        return R.ok(map);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("message", bigTypeList);
+        return R.ok(resultMap);
     }
 
 

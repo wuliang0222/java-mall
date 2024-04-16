@@ -77,8 +77,6 @@ public class IOotdImageServiceImpl extends ServiceImpl<OotdImageMapper, OotdImag
                 process.destroy();
                 throw new Exception("生成失败");
             } else { //正常执行
-                System.out.println("ootdImageUrl" + ootdImageUrl);
-                System.out.println("ootdImage.getId()" + ootdImage.getId());
                 OotdImage p = ootdImageService.getById(ootdImage.getId());
                 p.setOotdImage(ootdImageUrl);
                 p.setStatus(2);

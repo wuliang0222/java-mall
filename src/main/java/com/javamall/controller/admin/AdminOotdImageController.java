@@ -1,6 +1,10 @@
 package com.javamall.controller.admin;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.javamall.entity.BigType;
 import com.javamall.entity.OotdImage;
 import com.javamall.entity.PageBean;
 import com.javamall.entity.R;

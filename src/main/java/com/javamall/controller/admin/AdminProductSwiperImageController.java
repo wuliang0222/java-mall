@@ -30,7 +30,7 @@ public class AdminProductSwiperImageController {
     private String productSwiperImagesFilePath;
 
     /**
-     * 根据条件分页查询
+     * 根据条件查询
      */
     @GetMapping("/list/{id}")
     public R list(@PathVariable(value = "id") Integer id) {
@@ -57,10 +57,10 @@ public class AdminProductSwiperImageController {
 
             map.put("code", 0);
             map.put("msg", "上传成功");
-            Map<String, Object> map2 = new HashMap<>();
-            map2.put("title", newFileName);
-            map2.put("src", "/image/productSwiperImgs/" + newFileName);
-            map.put("data", map2);
+            Map<String, Object> dateMap = new HashMap<>();
+            dateMap.put("title", newFileName);
+            dateMap.put("src", "/image/productSwiperImgs/" + newFileName);
+            map.put("data", dateMap);
         }
         return map;
     }

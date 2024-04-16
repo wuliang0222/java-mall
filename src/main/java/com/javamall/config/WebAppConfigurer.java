@@ -33,7 +33,7 @@ public class WebAppConfigurer implements WebMvcConfigurer {
     //放行
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        String[] patterns = new String[]{"/adminLogin", "/product/**", "/bigType/**", "/user/wxlogin"};
+        String[] patterns = new String[]{"/adminLogin", "/product/**", "/bigType/**", "/user/wxlogin","/my/ootd/listAll"};
         registry.addInterceptor(sysInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(patterns);

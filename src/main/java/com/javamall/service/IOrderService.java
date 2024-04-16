@@ -17,6 +17,11 @@ public interface IOrderService extends IService<Order> {
      List<Order> list(Map<String,Object> map);
 
     /**
+     * 检查库存
+     */
+    boolean checkStock(Order order);
+
+    /**
      * 根据条件，查询订单总记录数
      */
      Long getTotal(Map<String,Object> map);
@@ -26,8 +31,9 @@ public interface IOrderService extends IService<Order> {
      */
     Order createOrder(Order order, String openId);
 
+
     /**
-     * 检查库存
+     * 未支付的订单进行支付
      */
-    boolean checkStock(Order order);
+    Order pay(Order order);
 }

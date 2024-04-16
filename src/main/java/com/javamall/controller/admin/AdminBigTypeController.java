@@ -42,10 +42,10 @@ public class AdminBigTypeController {
         Page<BigType> page = new Page<>(pageBean.getPageNum(), pageBean.getPageSize());
         Page<BigType> pageResult = bigTypeService.page(page, new QueryWrapper<BigType>().like("name", query));
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("bigTypeList", pageResult.getRecords());
-        map.put("total", pageResult.getTotal());
-        return R.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("bigTypeList", pageResult.getRecords());
+        resultMap.put("total", pageResult.getTotal());
+        return R.ok(resultMap);
     }
 
     /**
@@ -53,9 +53,9 @@ public class AdminBigTypeController {
      */
     @RequestMapping("/listAll")
     public R listAll() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("bigTypeList", bigTypeService.list());
-        return R.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("bigTypeList", bigTypeService.list());
+        return R.ok(resultMap);
     }
 
     /**
@@ -63,11 +63,7 @@ public class AdminBigTypeController {
      */
     @PostMapping("/save")
     public R save(@RequestBody BigType bigType) {
-        if (bigType.getId() == null || bigType.getId() == -1) {
-            bigTypeService.save(bigType);
-        } else {
-            bigTypeService.saveOrUpdate(bigType);
-        }
+        bigTypeService.saveOrUpdate(bigType);
         return R.ok();
     }
 
@@ -76,7 +72,6 @@ public class AdminBigTypeController {
      */
     @GetMapping("/delete/{id}")
     public R delete(@PathVariable(value = "id") Integer id) {
-        // 加个判断 大类下面如果有小类，返回报错提示
         if (smallTypeService.count(new QueryWrapper<SmallType>().eq("bigTypeId", id)) > 0) {
             return R.error(500, "大类下面有小类信息，不能删除");
         } else {
@@ -91,9 +86,9 @@ public class AdminBigTypeController {
     @GetMapping("/{id}")
     public R findById(@PathVariable(value = "id") Integer id) {
         BigType bigType = bigTypeService.getById(id);
-        Map<String, Object> map = new HashMap<>();
-        map.put("bigType", bigType);
-        return R.ok(map);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("bigType", bigType);
+        return R.ok(resultMap);
     }
 
     /**
@@ -101,7 +96,7 @@ public class AdminBigTypeController {
      */
     @RequestMapping("/uploadImage")
     public Map<String, Object> uploadImage(MultipartFile file) throws Exception {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         if (!file.isEmpty()) {
             String fileName = file.getOriginalFilename();
             String suffixName = null;
@@ -111,16 +106,14 @@ public class AdminBigTypeController {
             String newFileName = "bigType" + DateUtil.getCurrentDateStr() + suffixName;
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(bigTypeImagesFilePath + newFileName));
 
-            map.put("code", 0);
-            map.put("msg", "上传成功");
+            resultMap.put("code", 0);
+            resultMap.put("msg", "上传成功");
             Map<String, Object> dateMap = new HashMap<>();
-            //返回给前端新的图片地址
             dateMap.put("title", newFileName);
             dateMap.put("src", "/image/bigType/" + newFileName);
-            map.put("data", dateMap);
+            resultMap.put("data", dateMap);
         }
-
-        return map;
+        return resultMap;
     }
 
 

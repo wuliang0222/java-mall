@@ -46,38 +46,8 @@ public class IOrderServiceImpl extends ServiceImpl<OrderMapper, Order> implement
     }
 
     @Override
-    public Order createOrder(Order order, String openId) {
-        // 创建订单信息
-        order.setUserId(openId);
-        order.setOrderNo("order" + DateUtil.getCurrentDateStr());
-        order.setCreateDate(new Date());
-        // 要先创建订单 订单详情才有主键
-        orderService.saveOrUpdate(order);
-        // 如果支付了 设置支付时间 扣除剩余库存
-        if (order.getStatus() == 2) {
-            order.setPayDate(new Date());
-            OrderDetail[] goods = order.getGoods();
-            for (OrderDetail orderDetail : goods) {
-                // 购买数量
-                int quantity = orderDetail.getGoodsNumber();
-                // 库存
-                Product product = productService.getById(orderDetail.getGoodsId());
-                Integer stock = product.getStock();
-                // 计算剩余库存
-                int remainingStock = stock - quantity;
-                // 更新商品的库存信息
-                product.setStock(remainingStock);
-                productService.saveOrUpdate(product);
-                orderDetail.setMId(order.getId());
-                orderDetailService.save(orderDetail);
-            }
-        }
-        orderService.saveOrUpdate(order);
-        return order;
-    }
-
-    @Override
     public boolean checkStock(Order order) {
+        System.out.println("检查库存" + order);
         OrderDetail[] goods = order.getGoods();
         for (OrderDetail orderDetail : goods) {
             // 获取订单商品的购买数量
@@ -92,5 +62,61 @@ public class IOrderServiceImpl extends ServiceImpl<OrderMapper, Order> implement
             }
         }
         return true;
+    }
+
+    @Override
+    public Order createOrder(Order order, String openId) {
+        // 创建订单信息
+        order.setUserId(openId);
+        order.setOrderNo("order" + DateUtil.getCurrentDateStr());
+        order.setCreateDate(new Date());
+        // 要先创建订单 订单详情才有主键
+        orderService.saveOrUpdate(order);
+        // 如果支付了 设置支付时间
+        if (order.getStatus() == 2) {
+            order.setPayDate(new Date());
+        }
+        // 扣除剩余库存
+        OrderDetail[] goods = order.getGoods();
+        for (OrderDetail orderDetail : goods) {
+            // 购买数量
+            int quantity = orderDetail.getGoodsNumber();
+            // 库存
+            Product product = productService.getById(orderDetail.getGoodsId());
+            Integer stock = product.getStock();
+            // 计算剩余库存
+            int remainingStock = stock - quantity;
+            // 更新商品的库存信息
+            product.setStock(remainingStock);
+            productService.saveOrUpdate(product);
+            orderDetail.setMId(order.getId());
+            orderDetailService.save(orderDetail);
+        }
+        orderService.saveOrUpdate(order);
+        return order;
+    }
+
+    @Override
+    public Order pay(Order order) {
+        System.out.println("支付" + order);
+        order.setPayDate(new Date());
+        OrderDetail[] goods = order.getGoods();
+        for (OrderDetail orderDetail : goods) {
+            // 购买数量
+            int quantity = orderDetail.getGoodsNumber();
+            // 库存
+            Product product = productService.getById(orderDetail.getGoodsId());
+            Integer stock = product.getStock();
+            // 计算剩余库存
+            int remainingStock = stock - quantity;
+            // 更新商品的库存信息
+            product.setStock(remainingStock);
+            productService.saveOrUpdate(product);
+            orderDetail.setMId(order.getId());
+            orderDetailService.save(orderDetail);
+        }
+        orderService.saveOrUpdate(order);
+        System.out.println("order:" + order);
+        return order;
     }
 }

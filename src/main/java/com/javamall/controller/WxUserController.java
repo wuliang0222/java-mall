@@ -42,7 +42,6 @@ public class WxUserController {
      */
     @RequestMapping("/validate")
     public R validate(@RequestHeader(value = "token") String token) {
-        // 判断token
         return TokenUtil.checkToken(token);
     }
 
