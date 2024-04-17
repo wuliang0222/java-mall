@@ -4,10 +4,7 @@ package com.javamall.controller.admin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.javamall.entity.BigType;
-import com.javamall.entity.OotdImage;
-import com.javamall.entity.PageBean;
-import com.javamall.entity.R;
+import com.javamall.entity.*;
 import com.javamall.service.IOotdImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,10 +44,21 @@ public class AdminOotdImageController {
     }
 
     /**
+     * 更新展示虚拟试衣状态
+     */
+    @GetMapping("/updateShowOotd/{id}/showOotd/{showOotd}")
+    public R updateShowOotd(@PathVariable(value = "id") Integer id, @PathVariable(value = "showOotd") boolean showOotd) {
+        OotdImage ootdImage = ootdImageService.getById(id);
+        ootdImage.setShowOotd(showOotd);
+        ootdImageService.saveOrUpdate(ootdImage);
+        return R.ok();
+    }
+
+    /**
      * 删除
      */
     @GetMapping("/delete/{id}")
-    public R delete(@PathVariable(value = "id") Integer id){
+    public R delete(@PathVariable(value = "id") Integer id) {
         ootdImageService.removeById(id);
         return R.ok();
     }

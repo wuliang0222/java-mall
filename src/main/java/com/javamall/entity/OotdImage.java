@@ -31,7 +31,7 @@ public class OotdImage {
 
     private Integer category = 0; // 虚拟试衣种类 0 衣服 1 裤子 2 裙子
 
-//    private Integer show = 0; // 展示虚拟试衣
+    private boolean showOotd = false; // 展示虚拟试衣
 
     @JsonSerialize(using = CustomDateTimeSerializer.class)
     private Date createDate; // 虚拟试衣创建日期

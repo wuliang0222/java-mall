@@ -130,13 +130,18 @@ public class OotdImageController {
      */
     @RequestMapping("/listAll")
     public R listAll(Integer page, Integer pageSize) {
+        System.out.println("page:" + page);
+        System.out.println("pageSize:" + pageSize);
         Page<OotdImage> pageOotdImage = new Page<>(page, pageSize);
-        Page<OotdImage> ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).orderByDesc("ootdNo"));
+        Page<OotdImage> ootdImageResult = ootdImageService.page(pageOotdImage, new QueryWrapper<OotdImage>().eq("status", 2).eq("showOotd",true).orderByDesc("ootdNo"));
 
         Map<String, Object> resultMap = new HashMap<>();
+        System.out.println("getTotal");
         resultMap.put("total", ootdImageResult.getTotal());
+        System.out.println("getPages");
         resultMap.put("totalPage", +ootdImageResult.getPages());
         resultMap.put("page", page);
+        System.out.println("getRecords");
         List<OotdImage> ootdImageList = ootdImageResult.getRecords();
         resultMap.put("ootdImageList", ootdImageList);
         return R.ok(resultMap);
@@ -150,4 +155,20 @@ public class OotdImageController {
         ootdImageService.removeById(id);
         return R.ok();
     }
+
+    /**
+     * 更新虚拟试衣展示状态
+     */
+    @RequestMapping("/updateShowOotd")
+    public R updateShowOotd(String id, boolean showOotd, @RequestHeader(value = "token") String token) {
+        // 判断token
+        R r = TokenUtil.checkToken(token);
+        if (r.get("code").equals(500)) return r;
+
+        OotdImage ootdImage = ootdImageService.getById(id);
+        ootdImage.setShowOotd(showOotd);
+        ootdImageService.saveOrUpdate(ootdImage);
+        return R.ok();
+    }
+
 }
