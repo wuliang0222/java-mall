@@ -39,18 +39,22 @@ public class WxUserController {
 
     /**
      * 验证token超时
+     * @param token 之前生成的token
      */
     @RequestMapping("/validate")
     public R validate(@RequestHeader(value = "token") String token) {
         return TokenUtil.checkToken(token);
     }
 
+
     /**
      * 微信用户登录
+     * @param wxUserInfo [code,nickName,avatarUrl]
+     * @return token
      */
     @RequestMapping("/wxlogin")
     public R wxLogin(@RequestBody WxUserInfo wxUserInfo) {
-        //用code拼接微信请求api，获取openid
+        // 用code拼接微信请求api，获取openid
         String jscode2sessionUrl = weixinProperties.getJscode2sessionUrl() + "?appid=" + weixinProperties.getAppid() + "&secret=" + weixinProperties.getSecret() + "&js_code=" + wxUserInfo.getCode() + "&grant_type=authorization_code";
         String result = httpClientUtil.sendHttpGet(jscode2sessionUrl);
         JSONObject jsonObject = JSON.parseObject(result);
